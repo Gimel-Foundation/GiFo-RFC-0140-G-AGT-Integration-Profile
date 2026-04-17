@@ -28,10 +28,7 @@ active (policy evaluation, execution rings, trust scoring, kill switch, circuit
 breakers). AGT calls into GAuth's PEP for credential-bound delegation
 enforcement decisions.
 - “Dynamic” Scenario: In a dynamic future, AGT implementations (or successors)
-could integrate the full GAuth specification suite (RFCs 0110-0118). G-AGT (RFC
-0140) retains its purpose as the normative integration profile, the exclusive
-gateway to Gimel's proprietary services via Type C adapter interface contracts,
-and the conformance authority that defines what "G-AGT compliant" means.
+could integrate the full GAuth specification suite (RFCs 0110-0118). 
 
 Under all scenarios, the GAuth PEP (Policy Enforcement Point) remains the authoritative
 governance control plane. G-AGT positions GAuth as the authority and policy layer that
