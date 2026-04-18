@@ -1,7 +1,6 @@
-============================================================================
-GiFo-RFC 0140: G-AGT Integration Profile - 
-Combined Credential- and Platform-bound Enforcement (CCPE)
-============================================================================
+================================================================
+GiFo-RFC 0140: G-AGT Integration Profile - Combined Credential- and Platform-bound Enforcement (CCPE)
+================================================================
 
 :Document: GiFo-Request for Comments: 0140
 :Authors: G. Wehberg, C. Pinkel and the Architecture Working Group of Gimel Foundation
