@@ -1,6 +1,7 @@
-================================================================
-GiFo-RFC 0140: G-AGT Integration Profile
-================================================================
+============================================================================
+GiFo-RFC 0140: G-AGT Integration Profile - 
+Combined Credential- and Platform-bound Enforcement (CCPE)
+============================================================================
 
 :Document: GiFo-Request for Comments: 0140
 :Authors: G. Wehberg, C. Pinkel and the Architecture Working Group of Gimel Foundation
@@ -412,6 +413,14 @@ Phase 1 (credential-bound delegation enforcement) decisions via the Policy Trans
 Bridge (§6.2). AGT owns Phase 2 (platform-bound access control) natively, applying its
 own operational policies and governance controls. The bridge translates between GAuth's
 JSON and AGT's YAML worlds.
+
+**CCPE (Combined Credential- and Platform-Bound Enforcement).** The two-phase enforcement 
+architecture defined by this RFC, in which Phase 1 (credential-bound; GAuth's PEP) and Phase 2 
+(platform-bound; PBRG, e.g., Microsoft AGT) operate as a single governance control plane. 
+See also: GiFo-RFC 0130 §4 (PBRG category definition); §7–§8 (credential-bound paradigm).
+
+**Microsoft AGT**: Refers to the specific product, Microsoft`s Agent Governance Toolkit.
+
 
 2.4 Access Control and Operational Governance
 ---------------------------------------------
