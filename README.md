@@ -6,7 +6,7 @@ New Request for Comments of Gimel Foundation (GiFo RFC) - Establishung G-AGT Int
 
 Abstract of RFC: Today, there are many attempts to govern AI through new toolkits and solutions. Many of 
 these represent a platform-bound enforcement of policies, initiated by hooks. These
-attempts, though, are not necessarily suQicient to meet cybersecurity requirements and
+attempts, though, are not necessarily sufficient to meet cybersecurity requirements and
 regulations like the EU AI Act amongst others, which requires to ensure that AI systems
 developed or used within the EU are safe, trustworthy, and under control (see also GiFo-
 RFC 0130). Next to a platform bound-enforcement of policies, it requires a credential-
