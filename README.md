@@ -1,8 +1,8 @@
 # GiFo-RFC-0140
 
-G-AGT Integration Profile
+G-AGT Integration Profile - Combined Credential- and Platform-bound Enforcement (CCPE)
 
-New Request for Comments of Gimel Foundation (GiFo RFC) - Establishung G-AGT Integration Profile
+New Request for Comments of Gimel Foundation (GiFo RFC) - Establishung G-AGT Integration Profile - Combined Credential- and Platform-bound Enforcement (CCPE)
 
 Abstract of RFC: Today, there are many attempts to govern AI through new toolkits and solutions. Many of 
 these represent a platform-bound enforcement of policies, initiated by hooks. These
