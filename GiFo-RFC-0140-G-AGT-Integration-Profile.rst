@@ -44,7 +44,7 @@ acknowledges a dynamic third:
   Gimel's proprietary services via Type C adapter interface contracts, and the
   conformance authority that defines what "G-AGT compliant" means.
 
-Under all scenarios, the GAuth Power-PEP (Power-Enforcement Point) remains the authoritative governance control plane. G-AGT positions GAuth as the authority and policy layer that
+Under all scenarios, the GAuth Power-PEP (Power Enforcement Point) remains the authoritative governance control plane. G-AGT positions GAuth as the authority and policy layer that
 AGT's runtime hooks call into.
 
 This specification excludes AI-enabled governance, web3 integration as well as
@@ -111,7 +111,7 @@ The key words "Must", "Must Not", "Required", "Shall", "Shall Not", "Should", "S
 Not", "Recommended", "May", and "Optional" in the following specification are to be
 interpreted as described in IETF's RFC 2119.
 
-Note on terminology — Power*Point vs. Policy*Point. GiFo-RFCs 0110 and 0111 normatively define P*P in the GAuth context as Power-Decision / Enforcement / Administration / Information / Verification Point, emphasizing that GAuth governs delegated authority (power), not platform-configured policy. This is intentionally distinct from the XACML / IETF RFC 2753 sense of P*P as Policy*Point (Policy-Decision / Enforcement / Administration / Information Point). The architectural decomposition is structurally analogous, but the bound artifact (a Power-of-Attorney credential vs. a policy document) is categorically different. Throughout this document the unqualified term PEP without a Power- / Policy- prefix is determined by context: GAuth components are Power-* by definition (per RFC 0110/0111); engine components on the Phase 2 side are Policy-* by definition (per XACML / IETF RFC 2753). Where ambiguity is possible, this document uses the prefixed forms.
+Note on terminology — Power*Point vs. Policy*Point. GiFo-RFCs 0110 and 0111 normatively define P*P in the GAuth context as Power Decision / Enforcement / Administration / Information / Verification Point, emphasizing that GAuth governs delegated authority (power), not platform-configured policy. This is intentionally distinct from the XACML / IETF RFC 2753 sense of P*P as Policy*Point (Policy Decision / Enforcement / Administration / Information Point). The architectural decomposition is structurally analogous, but the bound artifact (a Power-of-Attorney credential vs. a policy document) is categorically different. Throughout this document the unqualified term PEP without a Power- / Policy- prefix is determined by context: GAuth components are Power-* by definition (per RFC 0110/0111); engine components on the Phase 2 side are Policy-* by definition (per XACML / IETF RFC 2753). Where ambiguity is possible, this document uses the prefixed forms.
 
 Throughout this document, the term CCPE (Combined Credential- and Platform-Bound Enforcement) refers to the architectural family this RFC normatively introduces. CCPE-A designates the integration profile specified herein — GAuth's Power-PEP chained to an enterprise governance toolkit (AGT-class engine) as the Phase 2 evaluator. CCPE-B designates the sibling profile for standalone Policy-as-Code engines (OPA / Rego, Cedar, SpiceDB), specified in GiFo-RFC 0150. CCPE-C is reserved for future engine families (e.g., research-tooling integration, hardware-attested enforcement, sector-specific engines) and is not specified herein. The two published profiles share a common credential layer (GAuth's Power-Enforcement Point and the 16-check pipeline of GiFo-RFC 0117) and differ in the architectural shape of the Phase 2 evaluator they integrate with.
 
@@ -306,21 +306,20 @@ budget, delegation_chain, etc.). | RFC 0116 §5.
 
 **PEP (Power Enforcement Point):** The component that intercepts agent action requests
 or calls and evaluates them against PoA credentials through a 16-check pipeline.
-Returns PERMIT, DENY, or CONSTRAIN. In G-AGT, the PEP is the authoritative governance
+Returns PERMIT, DENY, or CONSTRAIN. In G-AGT, the Power-PEP is the authoritative governance
 control plane across all scenarios. The PEP defines a Phase 2 extension point (§4.2)
 for invoking external access control engines such as AGT. | RFC 0117.
 
 **PDP (Power Decision Point):** The component that evaluates mandate structure,
-governance profile ceilings, and and authority rules to produce credential-bound authorization decisions.
+governance profile ceilings, and authority rules to produce credential-bound authorization decisions.
 | RFC 0110.
 
-**PAP (Power Administration Point):** The component through which mandates and Powers-of-Attorney are created, modified, and managed. Exposed via the Management API (RFC 0118). 
-(RFC 0118). | RFC 0110.
+**PAP (Power Administration Point):** The component through which mandates and Powers-of-Attorney are created, modified, and managed. Exposed via the Management API (RFC 0118). | RFC 0110.
 
 **PIP (Power Information Point):** The component that resolves contextual information needed for credential-bound evaluation (agent identity, session state, budget status, trust state, etc.).
 | RFC 0110.
 
-**PVP (Power Validation Point):** The component that verifies mandate structure and consistency against the PoA schema and governance-profile ceilings. | RFC 0110.
+**PVP (Power Verification Point):** The component that verifies mandate structure and consistency against the PoA schema and governance-profile ceilings. | RFC 0110.
 
 **Governance Profile:** One of five predefined profiles (minimal, standard, strikt,
 enterprise, behoerde) controlling the strictness of agent governance, including
@@ -805,7 +804,7 @@ well-established lineage in access control and network policy standards:
   architectural ancestor. GAuth's PEP 16-check pipeline and PERMIT/DENY/CONSTRAIN
   vocabulary are informed by XACML's decision model.
 - **GiFo-RFC 0110** (GAuth Protocol Engine) | 2026 | First application of the P*P
-  decomposition to the AI agent governance domain. Added PVP (Policy Validation
+  decomposition to the AI agent governance domain. Added PVP (Policy Verification
   Point) for credential schema validation. Established the pattern of
   governance-over-delegation that distinguishes AI agent authorization from
   traditional access control. GAuth's native P*P architecture. G-AGT extends this with
