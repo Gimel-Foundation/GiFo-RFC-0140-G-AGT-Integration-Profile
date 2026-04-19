@@ -320,7 +320,7 @@ governance profile ceilings, and and authority rules to produce credential-bound
 **PIP (Power Information Point):** The component that resolves contextual information needed for credential-bound evaluation (agent identity, session state, budget status, trust state, etc.).
 | RFC 0110.
 
-**PVP (Policy Validation Point):** The component that verifies mandate structure and consistency against the PoA schema and governance-profile ceilings. | RFC 0110.
+**PVP (Power Validation Point):** The component that verifies mandate structure and consistency against the PoA schema and governance-profile ceilings. | RFC 0110.
 
 **Governance Profile:** One of five predefined profiles (minimal, standard, strikt,
 enterprise, behoerde) controlling the strictness of agent governance, including
