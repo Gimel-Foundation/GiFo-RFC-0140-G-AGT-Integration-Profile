@@ -804,7 +804,7 @@ well-established lineage in access control and network policy standards:
   architectural ancestor. GAuth's PEP 16-check pipeline and PERMIT/DENY/CONSTRAIN
   vocabulary are informed by XACML's decision model.
 - **GiFo-RFC 0110** (GAuth Protocol Engine) | 2026 | First application of the P*P
-  decomposition to the AI agent governance domain. Added PVP (Policy Verification
+  decomposition to the AI agent governance domain. Added PVP (Power Verification
   Point) for credential schema validation. Established the pattern of
   governance-over-delegation that distinguishes AI agent authorization from
   traditional access control. GAuth's native P*P architecture. G-AGT extends this with
