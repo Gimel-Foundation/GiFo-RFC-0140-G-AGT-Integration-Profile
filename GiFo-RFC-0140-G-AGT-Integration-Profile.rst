@@ -7,7 +7,7 @@ GiFo-RFC 0140: G-AGT Integration Profile - Combined Credential- and Platform-bou
 :Organization: Gimel Foundation gGmbH i.G.
 :Obsoletes: —
 :Category: Standards Track
-:Version: 1.2
+:Version: 1.2.1
 :Date: 17 April 2026
 
 Abstract
@@ -236,6 +236,40 @@ GiFo-RFCs 0110, 0111, 0115, 0116, 0117, and 0118:
   to proprietary licensing by Gimel Foundation or Gimel Technologies.
 - **SDK implementations** — Code-level SDK implementations of G-AGT are defined in
   separate specifications (future GiFo-RFCs).
+
+
+1.1a Non-Conformant Architectural Variants (In-Scope Designations)
+------------------------------------------------------------------
+
+The three scenarios in §1 (AGT Engine, AGT Bridge, Dynamic) all presume the
+GAuth PEP as the authoritative governance control plane, with Phase 1
+(credential-bound delegation enforcement) leading and Phase 2 (platform-bound
+access control) following. Deployments that combine GAuth and an AGT-class
+engine but invert, parallelise, or override this chain direction remain
+**within the scope of this specification** for licensing, patent, and
+nomenclature purposes, but are **non-conformant** with G-AGT and Must Not
+claim "G-AGT compliant" status. Three non-conformant variants are named:
+
+- **CCPE-A-NCI (Non-Conformant Inverted):** Phase 2 (AGT-class engine) leads
+  the evaluation and calls Phase 1 (GAuth) as a downstream credential PIP,
+  collapsing delegation enforcement into platform policy evaluation.
+- **CCPE-A-NCP (Non-Conformant Parallel):** Phase 1 and Phase 2 evaluate
+  concurrently without an authoritative ordering or a deterministic decision
+  combination rule (§5.1.3).
+- **CCPE-A-NCO (Non-Conformant Override):** Phase 2 produces decisions that
+  supersede or rewrite Phase 1 PERMIT/DENY/CONSTRAIN outcomes, violating the
+  DENY precedence rule and CONSTRAIN provenance rule (§5.1.3).
+
+Non-conformant variants are addressed normatively in §5.1.5 and are recorded
+in the unified audit trail via the ``phase2_evaluation.profile`` field
+(§9.2). They remain subject to the Apache 2.0 license terms and the
+Exclusions in §1.1, and do not extinguish any patent or prior-art claim
+asserted by Gimel Foundation or Gimel Technologies in respect of the
+combined credential- and platform-bound enforcement (CCPE) family.
+
+This treatment is symmetric with GiFo-RFC 0150 §5.4.1 (CCPE-B-NCI / NCP /
+NCO) for standalone Policy-as-Code engines.
+
 
 1.2 Relationship to Existing Specifications
 -------------------------------------------
@@ -1689,6 +1723,36 @@ An agent action is only permitted when both Phase 1 (credential-bound delegation
 enforcement) and Phase 2 (platform-bound access control) return explicit permissive
 decisions.
 
+
+5.1.5 Non-Conformant Architectural Variants
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The orchestrated evaluation model (§5.1) requires Phase 1 to lead and Phase
+2 to follow, with the decision combination rules of §5.1.3 governing the
+combined outcome. Deployments that depart from this chain direction are
+**in scope of this RFC but non-conformant**, per the designations
+introduced in §1.1a:
+
+- A **CCPE-A-NCI** deployment Must Not be claimed as G-AGT compliant.
+  Inverting the chain — Phase 2 leading, Phase 1 reduced to a credential
+  PIP — defeats the defense-in-depth property described in §11.1 because a
+  compromise of the leading Phase 2 evaluator can suppress invocation of
+  Phase 1 entirely.
+- A **CCPE-A-NCP** deployment Must Not be claimed as G-AGT compliant.
+  Concurrent evaluation without a deterministic ordering and combination
+  rule produces non-reproducible decisions and breaks the audit
+  authoritativeness model of §9.1.
+- A **CCPE-A-NCO** deployment Must Not be claimed as G-AGT compliant.
+  Phase 2 override of Phase 1 violates the DENY precedence rule and the
+  CONSTRAIN provenance rule (§5.1.3) and removes the credential layer's
+  authority over delegation scope.
+
+Implementations that detect they are operating in a non-conformant variant
+Must record the variant in ``phase2_evaluation.profile`` (§9.2) and Must
+Not emit the ``"ccpe-a"`` profile value. The fail-closed principle (§5.1.4)
+and §11.5 continue to apply.
+
+
 5.2 Budget Deferral and Transactional Semantics
 -----------------------------------------------
 
@@ -2634,17 +2698,18 @@ the other.
         "budget_hold_status": "committed"
       },
 
-      "phase2_evaluation": {
-        "scenario": "engine",
-        "decision": "ALLOW",
-        "rules_evaluated": 47,
-        "rules_matched": 0,
-        "processing_time_ms": 0.8,
-        "engine_version": "3.1.0",
-        "violated_rules": [],
-        "execution_ring": 1,
-        "ring_override": null
-      },
+     "phase2_evaluation": {
+  "scenario": "engine",
+  "profile": "ccpe-a",
+  "decision": "ALLOW",
+  "rules_evaluated": 47,
+  "rules_matched": 0,
+  "processing_time_ms": 0.8,
+  "engine_version": "3.1.0",
+  "violated_rules": [],
+  "execution_ring": 1,
+  "ring_override": null
+},
 
       "scoring": {
         "trust_score": 750,
