@@ -2752,6 +2752,11 @@ The following fields are Required in every unified audit record:
   "not_applicable" (stateless mode), or "expired".
 - ``phase2_evaluation.scenario`` — Must be "engine" (Scenario i) or "bridge"
   (Scenario ii).
+- ``phase2_evaluation.profile`` — Conformance profile of the deployment.
+  Must be one of ``"ccpe-a"`` (conformant), ``"ccpe-a-nci"``,
+  ``"ccpe-a-ncp"``, or ``"ccpe-a-nco"`` (non-conformant variants per
+  §1.1a and §5.1.5). The value ``"ccpe-a"`` Must Not be emitted by
+  deployments that operate as any non-conformant variant.
 - ``phase2_evaluation.decision`` — Phase 2 decision (ALLOW, DENY, ``SKIPPED`` if
   Phase 1 DENY, or ``ERROR``).
 - ``scoring.trust_score`` — Deterministic trust score (0–1000 integer) at time of
