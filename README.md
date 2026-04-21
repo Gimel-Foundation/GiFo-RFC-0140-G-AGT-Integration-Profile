@@ -1,4 +1,4 @@
-# GiFo-RFC-0140
+# GiFo-RFC-0140 (V1.2.1)
 
 G-AGT Integration Profile - Combined Credential- and Platform-bound Enforcement (CCPE)
 
@@ -13,6 +13,11 @@ RFC 0130). Next to a platform bound-enforcement of policies, it requires a crede
 bound enforcement of the specific authority an AI system is supposed to have to act,
 decide and enter transactions. To integrate both, this is what this Request for Comment
 0140 is about.
+
+This document specifies CCPE-A, the first profile in the Combined Credential- and Platform-Bound 
+Enforcement (CCPE) family: GAuth's credential-bound enforcement (Phase 1) chained to an enterprise 
+governance toolkit (AGT-class engine) as the platform-bound Phase 2 evaluator. The sibling profile 
+for standalone Policy-as-Code engines is published as GiFo-RFC 0150 (CCPE-B).
 
 The G-AGT integration profile defines how a typical Agent Governance Toolkit (AGT) -
 exemplified by Microsoft's AGT and informed by publicly available operational
