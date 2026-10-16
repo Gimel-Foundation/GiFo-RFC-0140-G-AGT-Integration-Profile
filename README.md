@@ -1,4 +1,4 @@
-# GiFo-RFC-0140 (V1.2.1)
+# GiFo-RFC-0140 (V1.2.2 for review)
 
 G-AGT Integration Profile - Combined Credential- and Platform-bound Enforcement (CCPE)
 
