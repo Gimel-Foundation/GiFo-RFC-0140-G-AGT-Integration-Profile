@@ -5,10 +5,10 @@ GiFo-RFC 0140: G-AGT Integration Profile - Combined Credential- and Platform-bou
 :Document: GiFo-Request for Comments: 0140
 :Authors: G. Wehberg, C. Pinkel and the Architecture Working Group of Gimel Foundation
 :Organization: Gimel Foundation gGmbH i.G.
-:Obsoletes: —
+:Obsoletes: 1.2.1 (17. April 2026)
 :Category: Standards Track
-:Version: 1.2.1
-:Date: 17 April 2026
+:Version: 1.2.2 (for review)
+:Date: 16 October 2026
 
 Abstract
 ========
@@ -129,6 +129,9 @@ Table of Contents
 9. Unified Audit Trail
 10. Conformance Requirements
 11. Security Considerations
+
+Appendix A. NVIDIA OpenShell and Sentry Integration Cookbook (Informative)
+
 
 1. Scope
 ========
@@ -1017,6 +1020,20 @@ proprietary via Type C.
 
 A full specification for compliance engine integration is anticipated for future
 GiFo-RFC coverage.
+
+3.8.4 Isolated Agent Runtimes and Hardware-Separated Enforcement
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Isolated agent runtimes and hardware-separated enforcement components provide another deployment pattern for the G-AGT architecture. Such systems may combine workload isolation, network and tool-access policy, protected credential use, runtime intervention, and operational audit. NVIDIA OpenShell and the optional Sentry/DOCA/BlueField architecture illustrate this pattern.
+
+The complete runtime-governance integration is considered under this RFC’s G-AGT / CCPE-A profile. An independently integrated deterministic policy evaluator is instead considered under GiFo-RFC 0150, subject to that profile’s scope and qualification criteria. The presence of a particular policy language does not, by itself, determine the applicable profile.
+
+Runtime isolation and hardware separation do not replace credential-bound authority. The integration preserves a separately verifiable principal-to-agent mandate, a Phase 1 authority decision, and a subsequent native platform-bound Phase 2 decision. Native permissions cannot override a Phase 1 denial or enlarge the authority granted by the principal.
+
+Conversely, a platform’s documented delegation or authority-verification capabilities should be assessed on their actual artifacts, decisions, and lifecycle semantics. Their absence should not be inferred merely because the implementation differs from GAuth.
+
+Appendix A provides an informative OpenShell and Sentry integration cookbook. It describes candidate integration patterns, not a finding that either product satisfies the conformance requirements of this RFC.
+
 
 4. What G-AGT Is
 ================
@@ -3137,6 +3154,311 @@ RFC Cross-References
    * - §11 (Security)
      - GiFo-RFCs 0200 (Gimel ID 1.0), 0300 (Gimel Authentication 1.0); IETF RFC 8032;
        NIST PQC
+
+
+
+
+Appendix A. NVIDIA OpenShell and Sentry Integration Cookbook (Informative)
+==========================================================================
+
+
+A.1 Purpose and Status
+----------------------
+
+This appendix describes how NVIDIA OpenShell and an optional Sentry/DOCA/BlueField enforcement layer could participate in a G-AGT integration. It illustrates the application of the existing requirements of this RFC; it does not introduce additional normative requirements, change the conformance criteria, or establish a new CCPE profile. The normative provisions of this RFC govern in the event of any inconsistency.
+
+The proposed integration preserves two distinct questions:
+
+• Phase 1: Has the concrete authorizing person granted this agent valid, sufficiently narrow, unrevoked authority for the proposed action, including verified representative capacity where the person acts for an organization?
+
+• Phase 2: Does the configured platform permit that same action under its current operational policy?
+
+A native workload identity, service credential, signed platform policy, or successful platform decision does not, by itself, answer the Phase 1 question.
+
+The evidence baseline for this appendix is 16 October 2026. It comprises OpenShell v0.1.4 documentation, separately pinned OpenShell repository examples, and NVIDIA’s September 2026 runtime-control and Open Agent Safety technical articles. Repository examples are not assumed to be included unchanged in the documented release.
+
+Statements about documented NVIDIA behavior are distinguished from proposed GAuth integration responsibilities. Undocumented behavior remains unresolved rather than being treated as absent. No adapter implementation, hardware test, vendor review, certification, or tested interoperability is claimed.
+
+
+A.2 Component Roles and Assessment Boundary
+-------------------------------------------
+
+OpenShell provides substantive preventive controls, including workload isolation, network-policy enforcement, protected provider-credential handling, and audit. Its gateway extensions govern selected control-plane operations. Its supervisor middleware processes supported application traffic within the documented enforcement pipeline. [NV-1–NV-4]
+
+Sentry adds a hardware-separated monitoring and enforcement layer in the architecture described by NVIDIA. DOCA supplies programmable integration capabilities on BlueField. These components are related but are not interchangeable: hardware placement, gateway identity, native policy evaluation, and delegated-authority verification are separate properties requiring separate evidence. [NV-5]
+
+NVIDIA expressly describes verification of agent identity and delegated authority. Accordingly, this appendix does not characterize the broader Sentry/DOCA architecture as categorically lacking delegation. Qualification requires examination of the actual issuer and holder model, principal and representative-capacity binding, authority artifact, independent decisions, delegation narrowing, and revocation semantics.
+
+The reviewed OpenShell native access-control boundary is S1-compatible and provides real enforcement. This bounded finding does not classify every OpenShell deployment. The reviewed evidence does not establish the complete S2 authority separation for the broader Sentry/DOCA deployment.
+
+Nor does the reviewed evidence establish S3: that conclusion would require evidence that principal authority has been collapsed into the native platform identity, permission, decision, or lifecycle model. Hardware separation, co-location, shared transport, or the number of signed objects does not independently settle this question.
+
+The integration proposed below targets S2 separation. This is an architectural objective, not a claim about an implemented deployment. The S1/S2/S3 classification is distinct from this RFC’s Scenario i) “AGT Engine” and Scenario ii) “AGT Bridge” integration topologies.
+
+GiFo-RFC 0210 is relevant where an actual identity or attribute surface is bridged to GAuth authority. Workload identity or credential injection alone does not establish the principal’s delegation event. GiFo-RFC 0223 is relevant only where the deployment actually adopts edge-specific placement, connectivity, or bounded disconnected operation; BlueField placement alone does not make a deployment an edge profile.
+
+
+A.3 Proposed Integration Architecture
+-------------------------------------
+
+The proposed architecture assigns the following responsibilities:
+
+• Authority verifies mandate issuance and delegation, including the authorizing person and representative capacity where applicable, and maintains current mandate and revocation state.
+
+• A protected action gate binds the proposed operation to its tenant, agent, mandate, resource, destination, parameters, and operation identifier.
+
+• The GAuth Power-PEP evaluates Phase 1 authority before the designated native Phase 2 evaluation.
+
+• OpenShell supplies the applicable native platform controls. Optional Sentry enforcement supplies additional refusal or containment within its demonstrated coverage.
+
+• The effect gate reconciles the decisions and prevents execution unless the complete action remains authorized.
+
+The logical sequence is:
+
+Authorizing person and representative-capacity evidence
+                         |
+                  Explicit delegation
+                         |
+                  GAuth Authority
+                         |
+Agent action --> Protected action gate
+                         |
+                  Power-PEP Phase 1
+                         |
+          DENY ----------+----------> Stop and audit
+                         |
+                 PERMIT / CONSTRAIN
+                         |
+              Native Phase 2 evaluation
+                         |
+              Optional additional Sentry veto
+                         |
+          Combined decision and freshness fence
+                         |
+                 Protected target effect
+                         |
+             Correlated outcome and audit
+
+This is a proposed logical topology, not an NVIDIA API diagram.
+
+The gate and its credentials are outside the agent’s modification boundary. A cooperative wrapper inside an agent-controlled process is not sufficient if the agent can access the target through another path.
+
+The target’s own service authorization remains an additional boundary. Neither target authorization nor a valid provider credential replaces the combined authority and platform decision.
+
+
+A.4 OpenShell Interception Order
+--------------------------------
+
+OpenShell v0.1.4 documents supervisor middleware as running after network-policy evaluation and before provider-credential injection. Consequently, placing the only GAuth authority check in that middleware does not establish Phase-1-first ordering relative to the preceding native policy evaluation. [NV-3]
+
+The primary candidate pattern therefore places a protected action gate upstream of the designated native evaluation path. The gate parks the consequential operation, obtains Phase 1 authorization, and forwards only the permitted or constrained action into the native control path.
+
+Supervisor middleware may additionally validate an already-issued, action-bound authority receipt and refuse traffic. It is not treated as the source of the initial Phase 1 decision in this pattern.
+
+Gateway approval of sandbox creation or policy updates is a separate control-plane operation. It does not replace per-action authority enforcement.
+
+Always-on operating-system isolation and emergency containment may independently refuse activity. They do not need to wait for GAuth, but they are not substitutes for the ordered application-level decision chain.
+
+Where the selected deployment cannot demonstrate a supported upstream gate and the required decision order, the integration remains unqualified. The mere presence of two checks somewhere before an external effect does not establish the specified orchestration.
+
+
+A.5 Integration Responsibilities and Native Interfaces
+------------------------------------------------------
+
+A deployment qualification record identifies which responsibilities are supplied by documented native interfaces, by the GAuth integration, or remain unresolved:
+
+1. Control-plane governance
+
+The reviewed OpenShell gateway-interceptor material and governance example describe selected operations such as sandbox creation, configuration updates, policy-analysis submission, and provider administration. These surfaces govern the corresponding control-plane changes; they are not assumed to intercept every consequential agent action. [NV-6]
+
+2. Action binding
+
+Both evaluations concern the same agent, tenant, mandate, operation identifier, resource, destination, parameters, and material request content. The integration records the binding and rejects substitution.
+
+3. Decision transport
+
+The integration obtains an authenticated native decision or equivalent protected pre-effect enforcement result that can be associated with the exact action. A post-execution audit event alone cannot supply this boundary.
+
+4. Credential separation
+
+Principal-authority evidence remains distinct from native workload and provider credentials. The reviewed governance example signs policies and provider-profile metadata; the SPIFFE example demonstrates workload-bound token exchange. These are substantive controls, but do not alone establish the complete principal mandate and its lifecycle. [NV-6]
+
+5. Freshness and revocation
+
+Decisions are associated with current mandate status, relevant ancestors, policy revision, expiry, and the selected revocation-ordering domain. A platform-policy refresh interval is not automatically a mandate-revocation guarantee.
+
+6. Effect control
+
+Alternate egress, direct credential use, local sockets, subprocesses, and other consequential paths are either mediated by qualified gates or excluded from the permitted deployment scope.
+
+7. Audit correlation
+
+The integration preserves both source decisions and the final outcome without replacing native evidence with an unauthenticated adapter assertion.
+
+8. Sentry interfaces
+
+The selected deployment establishes the supported intervention points, interface versions, decision authenticity, failure behavior, and evidence-export capabilities. The reviewed reference-design article alone does not establish a versioned Sentry PoA or decision API.
+
+Any proposed adapter record or operation name is illustrative unless supported by the selected version’s native schema. This appendix does not define an NVIDIA endpoint or assert that an adapter already exists.
+
+
+A.6 Decision Combination
+------------------------
+
+The existing combination rules of §5 apply unchanged:
+
+• Phase 1 DENY terminates the attempt. The designated Phase 2 evaluation is recorded as skipped.
+
+• Phase 1 PERMIT followed by native ALLOW permits only the bound action.
+
+• Phase 1 CONSTRAIN followed by native ALLOW preserves the Phase 1 constraints unchanged.
+
+• Native DENY, a required Sentry veto, or an unavailable mandatory control prevents execution.
+
+• Pending approval, timeout, stale evidence, malformed response, and unknown decision state are not permission.
+
+Phase 2 does not create or modify GAuth constraints. If middleware, policy processing, or an approval workflow changes the action’s material content or meaning, the original binding is invalidated and the changed action undergoes fresh evaluation.
+
+A later platform approval cannot revive withdrawn authority. Evaluation and approval collection do not themselves authorize a consequential target effect.
+
+
+A.7 Deployment Variants
+-----------------------
+
+OpenShell-only deployment
+
+The protected action gate obtains Phase 1 authorization before forwarding the bound operation through the designated native OpenShell control path. Target credentials and alternative routes remain unavailable to the agent.
+
+The integration establishes a protected relationship between the native decision, the combined result, and dispatch of the exact authorized action. Where the deployment cannot demonstrate the required interception order and effect boundary, the integration remains unqualified.
+
+OpenShell with Sentry/BlueField
+
+The same authority and effect-gate architecture is retained. Sentry adds independently protected intervention within its verified coverage. The qualification record identifies the hardware, firmware, DOCA/Sentry software, supported interfaces, failure behavior, decision evidence, and actual intervention points.
+
+If Sentry is mandatory for an action class, its unavailability blocks that class rather than silently falling back to an OpenShell-only configuration. If it supplies supplementary telemetry only, that role is recorded and is not counted as preventive enforcement.
+
+Stopping inference does not necessarily stop queued tool calls, background processes, alternate model routes, or already-dispatched operations. Completed external effects are not reversed by containment.
+
+A disconnected deployment does not inherit a promise of immediate central revocation. Any bounded disconnected authority follows an explicitly selected and separately qualified profile rather than an implicit outage fallback.
+
+
+A.8 Delegation, Withdrawal and Budget Handling
+----------------------------------------------
+
+Each child agent has an identifiable holder binding and a delegation bounded by its parent’s current authority. Sandbox inheritance, a shared API credential, or a copied tool list is not treated as a child mandate.
+
+Parent narrowing invalidates affected child permissions and queued decisions. Parent revocation blocks dependent descendants. Child-only revocation leaves the parent and unrelated siblings authorized for their remaining permitted actions, unless another policy independently requires broader containment.
+
+Where children share a sandbox or credential, qualification establishes a tamper-resistant per-agent binding and selective enforcement. Otherwise, selective child-only revocation is not claimed.
+
+The deployment declares and measures maximum authority-status age, withdrawal-propagation time, decision lifetime, clock skew, and permitted audit backlog. These are deployment commitments, not guarantees supplied by this appendix.
+
+Withdrawal propagation is measured from acceptance of the authoritative change to its enforcement at the affected effect gates, not merely to delivery of a notification.
+
+The final dispatch boundary rechecks or fences authority and policy state under an explicitly defined ordering rule. A separate status read followed by an unrelated dispatch operation does not, by itself, establish atomic revocation ordering.
+
+Stateful budget handling follows §5.2: Phase 1 establishes the tentative hold, the combined permit or constrain decision commits it, and denial releases it. Hold expiration and concurrent allocation handling follow the applicable contract.
+
+A later execution failure or uncertain target outcome is handled through explicit, idempotent reconciliation rather than an assumed refund or an uncontrolled retry. A transport timeout is not proof that the target performed no action.
+
+Authority withdrawal, consumed operation identifiers, and budget state are not reset by policy rollback or service restart.
+
+
+A.9 Audit and Coverage Limits
+-----------------------------
+
+The correlated record preserves principal and capacity references, mandate-chain identifiers, agent and sandbox binding, both decisions, policy revision, freshness evidence, final constraints, operation identifier, budget events, dispatch status, and target outcome.
+
+GAuth evidence remains authoritative for the Phase 1 decision. Native OpenShell and Sentry evidence remains attributable to its respective source. A Phase 1 denial records the designated Phase 2 evaluation as skipped rather than fabricating a native denial.
+
+Secrets and unnecessary personal or request content are excluded from ordinary logs. Evidence access, retention, integrity protection, and deletion are governed separately.
+
+A durable decision record or protected audit outbox precedes dispatch. If mandatory evidence cannot be preserved, the action does not proceed. Any permitted buffering during a remote audit outage is bounded and does not silently become unlimited unaudited operation.
+
+OpenShell’s documented middleware limitations require explicit treatment. Middleware does not inspect traffic to endpoints configured with tls: skip, WebSocket binary messages, or server-to-agent WebSocket messages. Response-body inspection also has documented limitations for compressed, partial, and Cache-Control: no-transform responses. [NV-3]
+
+Local filesystem, process, socket, and other non-network effects require their own qualified boundaries. An uninspected or unmediated path is not counted as a successfully evaluated action.
+
+
+A.10 Worked Delegation Case and Acceptance Evidence
+---------------------------------------------------
+
+A verified company representative authorizes a parent agent to read approved project records but not publish them. Child A receives access only to project Alpha; child B receives a separate Beta scope.
+
+An Alpha read by A passes current Phase 1 authorization and native platform controls before dispatch. A publication request is denied by Phase 1 even if the provider credential technically permits writing.
+
+Removing Alpha access invalidates A’s affected cached and queued decisions. Revoking A does not revoke B or the parent. If the implementation can only revoke a shared credential for all three, it does not demonstrate selective child-only revocation.
+
+Qualification exercises this case together with:
+
+• Parent narrowing and revocation after children have started.
+• Child-only revocation with unaffected siblings.
+• Stale authority and unavailable mandatory services.
+• Policy changes between evaluation and dispatch.
+• Receipt replay and substitution of action, tenant, agent, or destination.
+• Direct credential use, alternate egress, and unsupported transports.
+• Inference interruption while tools or background jobs remain active.
+• Concurrent spending and indeterminate target outcomes.
+• Audit failure and recovery around dispatch.
+• Delayed approvals, request transformations, and key rotation.
+• Attempts by the agent to modify the gate, policy, credentials, or audit path.
+• A deliberately incorrect middleware-only authority placement, to demonstrate detection of the ordering defect.
+
+Acceptance evidence records actual target effects, not only denial logs. It demonstrates the declared propagation and freshness bounds, decision/effect correlation, and prevention of unauthorized duplicate execution or overspend.
+
+OpenShell-only and Sentry-enabled configurations are qualified separately. Passing a finite test set provides evidence for the tested configuration, not proof of universal safety.
+
+These are proposed qualification cases. Their inclusion does not represent executed tests or certified interoperability.
+
+
+A.11 Conformance and Exclusions
+-------------------------------
+
+The architecture described here does not waive any applicable requirement of §10. In particular, native isolation or policy enforcement is not automatically equivalent to the required execution-ring model, deterministic trust scoring, governance-profile mapping, dormancy behavior, approval semantics, or unified audit contract.
+
+Model-based behavioral detection, reasoning inspection, and model-generated policy advice are distinguished from the qualifying deterministic evaluator. Applying a threshold to a model score does not, by itself, establish deterministic evaluation in the sense of this RFC.
+
+A model finding does not issue a mandate, enlarge a delegation, or override an authority denial. Model-proposed policy changes undergo the applicable authorized review and evaluation process.
+
+The exclusions and Type C adapter provisions of §1.1 and §8 remain unchanged. Where a proposed GAuth integration uses excluded AI-enabled governance functionality, the applicable adapter and separate licensing conditions are addressed explicitly. This appendix makes no blanket licensing or infringement assertion about independent NVIDIA products.
+
+Product references are descriptive. No endorsement, partnership, vendor approval, certification, or additional licence grant is implied. Existing legal provisions and applicable rights reservations remain unchanged.
+
+
+A.12 Informative Sources
+------------------------
+
+Evidence reviewed as of 16 October 2026:
+
+[NV-1] NVIDIA OpenShell v0.1.4, Overview.
+https://docs.nvidia.com/openshell/v0.1.4/about/overview.md
+
+[NV-2] NVIDIA OpenShell v0.1.4, Extensibility.
+https://docs.nvidia.com/openshell/v0.1.4/extensibility/overview.md
+
+[NV-3] NVIDIA OpenShell v0.1.4, Supervisor Middleware.
+https://docs.nvidia.com/openshell/v0.1.4/extensibility/supervisor-middleware.md
+
+[NV-4] NVIDIA, “Add Runtime Controls to AI Agents with NVIDIA OpenShell,” 28 September 2026.
+https://developer.nvidia.com/blog/add-runtime-controls-to-ai-agents-with-nvidia-openshell/
+
+[NV-5] NVIDIA, “NVIDIA Open Agent Safety Platform: A Reference for Continuous In-Silicon Agent Monitoring,” 28 September 2026.
+https://developer.nvidia.com/blog/nvidia-open-agent-safety-platform-a-reference-for-continuous-in-silicon-agent-monitoring/
+
+[NV-6] NVIDIA/OpenShell repository, revision:
+b2069a267c7c8c7cb9a8b652792167dab886cd83
+
+Repository snapshot:
+https://github.com/NVIDIA/OpenShell/tree/b2069a267c7c8c7cb9a8b652792167dab886cd83
+
+Reviewed paths:
+• rfc/0010-gateway-interceptors/README.md
+• examples/governance-interceptor/README.md
+• examples/spiffe-token-exchange-demo/README.md
+
+Versioned documentation and the pinned repository examples are separate evidence sets. Qualification verifies the actual deployed release, configuration, extension protocol, and interfaces rather than assuming equivalence.
+
+
 
 ----
 
